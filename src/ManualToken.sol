@@ -70,4 +70,9 @@ contract ManualToken {
         //we need to return a boolean value of true.
         return true;
     } 
+
+    function burn(uint256 amountToBurn) public {
+        s_balances[msg.sender]-=amountToBurn;
+        s_tokenSupply-=amountToBurn;
+    }
 }
