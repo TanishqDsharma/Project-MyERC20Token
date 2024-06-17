@@ -76,6 +76,7 @@ contract ManualToken {
     } 
 
     function burn(uint256 amountToBurn) public {
+        require(s_balances[msg.sender] >= amountToBurn, "Insufficient balance");
         s_balances[msg.sender]-=amountToBurn;
         s_tokenSupply-=amountToBurn;
     }
