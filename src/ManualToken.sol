@@ -40,13 +40,17 @@ contract ManualToken {
         
         //Performing check to verify that Owner is minting tokens
         if(msg.sender==s_owner){
-            revert ManualToken__OnlyOwnerCanMintTheTokens();
-        }
-        //Updating the balance of the recipient
-        s_balances[recipient]+=amount;
+            
+            //Updating the balance of the recipient
+            s_balances[recipient]+=amount;
 
-        //Updating the total supply, since we have minted new tokens,we also need to update the total amount of tokens issued,
-        s_tokenSupply+=amount;
+            //Updating the total supply, since we have minted new tokens,we also need to update the total amount of tokens issued,
+            s_tokenSupply+=amount;
+        }else{
+            revert ManualToken__OnlyOwnerCanMintTheTokens();
+
+        }
+       
     } 
 
     //A function used to query the balance corresponding to an address
