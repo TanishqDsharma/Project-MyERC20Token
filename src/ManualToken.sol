@@ -8,6 +8,7 @@ contract ManualToken {
     ////////////
 
     error ManualToken__OnlyOwnerCanMintTheTokens();
+    error ManualToken__NotEnoughbalance();
 
 
     //Is used to store the total supply of the token. It is defined as public and can be queried by anyone.
@@ -19,7 +20,9 @@ contract ManualToken {
     //To track token balances efficiently: we are using mapping to store the balance corresponding to each address
     mapping (address => uint) public s_balances;
 
-    constructor(){
+    constructor(uint256 initialSupply){
+        //Minting the initial supply of tokens to the issuer provides them with an initial allocation for distribution.
+        mint(msg.sender,initialSupply );       
         s_owner=msg.sender;
     }
 
@@ -42,8 +45,29 @@ contract ManualToken {
         //Updating the balance of the recipient
         s_balances[recipient]+=amount;
 
-        //Updating the total supply
+        //Updating the total supply, since we have minted new tokens,we also need to update the total amount of tokens issued,
         s_tokenSupply+=amount;
     } 
 
+    //A function used to query the balance corresponding to an address
+    function balanceOf(address account) public view returns(uint256){
+        return s_balances[account];
+    }
+
+    /**
+     * 
+     * @param recipient Address that is receiving the tokens
+     * @param amount Amount of tokens being transferred
+     * @dev  Transfer function that allows users to transfer tokens
+     */
+    function transfer(address recipient, uint256 amount) public returns(bool){
+        if(amount>s_balances[msg.sender]){
+            revert ManualToken__NotEnoughbalance();
+        }
+        s_balances[msg.sender]-=amount;
+        s_balances[recipient]+=amount;
+        //To provide a clear signal to the calling function or external user that the transfer operation completed without any errors or exceptions, 
+        //we need to return a boolean value of true.
+        return true;
+    } 
 }
