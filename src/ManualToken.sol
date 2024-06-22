@@ -21,9 +21,10 @@ contract ManualToken {
     mapping (address => uint) public s_balances;
 
     constructor(uint256 initialSupply){
+        s_owner=msg.sender;
+
         //Minting the initial supply of tokens to the issuer provides them with an initial allocation for distribution.
         mint(msg.sender,initialSupply );       
-        s_owner=msg.sender;
     }
 
 
@@ -33,7 +34,7 @@ contract ManualToken {
 
     /**
      * 
-     * @param recipient Address that will mint the tokens
+     * @param recipient Address that will get the tokens
      * @param amount Amounts of token needs to be minted
      */
     function mint(address recipient,uint256 amount) public {
@@ -65,9 +66,7 @@ contract ManualToken {
      * @dev  Transfer function that allows users to transfer tokens
      */
     function transfer(address recipient, uint256 amount) public returns(bool){
-        if(amount>s_balances[msg.sender]){
-            revert ManualToken__NotEnoughbalance();
-        }
+        require(amount<=s_balances[msg.sender],"Not Enough Balance");
         s_balances[msg.sender]-=amount;
         s_balances[recipient]+=amount;
         //To provide a clear signal to the calling function or external user that the transfer operation completed without any errors or exceptions, 
@@ -79,5 +78,13 @@ contract ManualToken {
         require(s_balances[msg.sender] >= amountToBurn, "Insufficient balance");
         s_balances[msg.sender]-=amountToBurn;
         s_tokenSupply-=amountToBurn;
+    }
+
+    /////////////////////
+    //Getter Functions///
+    ////////////////////
+
+    function getOwner() public returns(address){
+        return s_owner;
     }
 }
